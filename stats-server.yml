@@ -4,7 +4,7 @@ server:
 spring:
   datasource:
     driverClassName: "org.postgresql.Driver"
-    url: "jdbc:postgresql://localhost:6432/ewm-stats"
+    url: "jdbc:postgresql://localhost:5432/ewm-stats"
     username: "stat"
     password: "stat"
   jpa:
