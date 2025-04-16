@@ -5,35 +5,54 @@
 spring:
   cloud:
     gateway:
-      # === Admin API ===
-        - id: admin-api
-          uri: lb://main-service
+      routes:
+        # Admin Category Routes
+        - id: admin_categories
+          uri: http://main-service:8081
           predicates:
-            - Path=/admin/**  # Все запросы начинаются с /api/admin
-          filters:
-            - StripPrefix=1       # Удаляем префикс "/api/admin" → "/"
-        
-        # === Private API ===
-        - id: private-api
-          uri: lb://main-service
+            - Path=/admin/categories/**
+            - Method=POST,DELETE,PATCH
+
+        # Admin Comment Routes
+        - id: admin_comments
+          uri: http://main-service:8081
           predicates:
-            - Path=/private/**
-          filters:
-            - StripPrefix=1
-        
-        # === Public API ===
-        - id: public-api
-          uri: lb://main-service
+            - Path=/admin/comment/**
+            - Method=GET,DELETE,POST
+
+        # Private Comments Routes
+        - id: private_comments
+          uri: http://main-service:8081
           predicates:
-            - Path=/public/**
-          filters:
-            - StripPrefix=1
-        
-        # === Общие эндпоинты без префикса ===
-        - id: default-api
-          uri: lb://main-service
+            - Path=/comment/**
+            - Method=GET,POST,PATCH,DELETE
+
+        # Private Requests Routes
+        - id: private_requests
+          uri: http://main-service:8081
           predicates:
-            - Path=/**
+            - Path=/users/*/requests/**
+            - Method=GET,POST,PATCH
+
+        # Public Category Routes
+        - id: public_categories
+          uri: http://main-service:8081
+          predicates:
+            - Path=/categories/**
+            - Method=GET
+
+        # Дополнительные маршруты для специфичных путей Private Comments
+        - id: private_comments_event
+          uri: http://main-service:8081
+          predicates:
+            - Path=/comment/event/**
+            - Method=POST
+
+        - id: private_comments_user
+          uri: http://main-service:8081
+          predicates:
+            - Path=/comment/user/**
+            - Method=GET
       discovery:
         locator:
           enabled: true
