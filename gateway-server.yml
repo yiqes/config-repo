@@ -17,6 +17,10 @@ spring:
           enabled: true
           lower-case-service-id: true
 
+logging:
+  level:
+    org.springframework.cloud.gateway: TRACE
+
 eureka:
   client:
     serviceUrl:
