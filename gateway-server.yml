@@ -5,38 +5,35 @@
 spring:
   cloud:
     gateway:
-      routes:
-        # Маршрут для админских эндпоинтов
-        - id: admin-service
+      # === Admin API ===
+        - id: admin-api
           uri: lb://main-service
           predicates:
-            - Path=/api/admin/**  # Все запросы начинаются с /api/admin
+            - Path=/admin/**  # Все запросы начинаются с /api/admin
           filters:
-            - StripPrefix=2       # Удаляем первые два сегмента (/api/admin → /)
-
-        # Маршрут для приватных эндпоинтов
-        - id: private-service
+            - StripPrefix=1       # Удаляем префикс "/api/admin" → "/"
+        
+        # === Private API ===
+        - id: private-api
           uri: lb://main-service
           predicates:
-            - Path=/api/private/**
-          filters:
-            - StripPrefix=2
-
-        # Маршрут для публичных эндпоинтов
-        - id: public-service
-          uri: lb://main-service
-          predicates:
-            - Path=/api/public/**
-          filters:
-            - StripPrefix=2
-
-        # Маршрут для общих эндпоинтов без префикса (например, /categories)
-        - id: default-service
-          uri: lb://main-service
-          predicates:
-            - Path=/api/**
+            - Path=/private/**
           filters:
             - StripPrefix=1
+        
+        # === Public API ===
+        - id: public-api
+          uri: lb://main-service
+          predicates:
+            - Path=/public/**
+          filters:
+            - StripPrefix=1
+        
+        # === Общие эндпоинты без префикса ===
+        - id: default-api
+          uri: lb://main-service
+          predicates:
+            - Path=/**
       discovery:
         locator:
           enabled: true
