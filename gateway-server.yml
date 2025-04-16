@@ -1,4 +1,4 @@
-server:
+  server:
   address: 0.0.0.0
   port: 8080
 
@@ -6,7 +6,32 @@ spring:
   cloud:
     gateway:
       routes:
-        - id: main-service
+        # Маршрут для админских эндпоинтов
+        - id: admin-service
+          uri: lb://main-service
+          predicates:
+            - Path=/api/admin/**  # Все запросы начинаются с /api/admin
+          filters:
+            - StripPrefix=2       # Удаляем первые два сегмента (/api/admin → /)
+
+        # Маршрут для приватных эндпоинтов
+        - id: private-service
+          uri: lb://main-service
+          predicates:
+            - Path=/api/private/**
+          filters:
+            - StripPrefix=2
+
+        # Маршрут для публичных эндпоинтов
+        - id: public-service
+          uri: lb://main-service
+          predicates:
+            - Path=/api/public/**
+          filters:
+            - StripPrefix=2
+
+        # Маршрут для общих эндпоинтов без префикса (например, /categories)
+        - id: default-service
           uri: lb://main-service
           predicates:
             - Path=/api/**
